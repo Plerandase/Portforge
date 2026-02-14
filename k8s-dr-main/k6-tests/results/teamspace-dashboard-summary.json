@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-01-25T15:11:23.516Z",
+  "testName": "팀 스페이스 대시보드 테스트",
+  "baseUrl": "https://api.portforge.org",
+  "metrics": {
+    "totalRequests": 400,
+    "avgResponseTime": "93.14",
+    "p95ResponseTime": "115.80",
+    "errorRate": "2.50%"
+  },
+  "apiMetrics": {
+    "teamStats": {
+      "avg": "112.64",
+      "p95": "173.21"
+    },
+    "tasks": {
+      "avg": "125.63",
+      "p95": "191.98"
+    },
+    "files": {
+      "avg": "135.92",
+      "p95": "193.98"
+    },
+    "meetings": {
+      "avg": "46.57",
+      "p95": "63.92"
+    },
+    "reports": {
+      "avg": "44.91",
+      "p95": "59.59"
+    },
+    "totalDashboard": {
+      "avg": "514.34",
+      "p95": "2393.10"
+    }
+  }
+}

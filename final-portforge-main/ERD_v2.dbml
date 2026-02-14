@@ -1,0 +1,452 @@
+// [ENUM 정의: 기술 스택 및 카테고리]
+Enum StackCategory {
+  FRONTEND
+  BACKEND
+  DB
+  INFRA
+  DESIGN
+  ETC
+}
+
+Enum TechStack {
+  // 프론트엔드
+  React
+  Vue
+  Nextjs
+  Svelte
+  Angular
+  TypeScript
+  JavaScript
+  TailwindCSS
+  StyledComponents
+  Redux
+  Recoil
+  Vite
+  Webpack
+  
+  // 백엔드
+  Java
+  Spring
+  Nodejs
+  Nestjs
+  Go
+  Python
+  Django
+  Flask
+  Express
+  php
+  Laravel
+  GraphQL
+  RubyOnRails
+  CSharp
+  DotNET
+  
+  // DB
+  MySQL
+  PostgreSQL
+  MongoDB
+  Redis
+  Oracle
+  SQLite
+  MariaDB
+  Cassandra
+  DynamoDB
+  FirebaseFirestore
+  Prisma
+  
+  // 인프라
+  AWS
+  Docker
+  Kubernetes
+  GCP
+  Azure
+  Terraform
+  Jenkins
+  GithubActions
+  Nginx
+  Linux
+  Vercel
+  Netlify
+  
+  // 디자인
+  Figma
+  AdobeXD
+  Sketch
+  Canva
+  Photoshop
+  Illustrator
+  Blender
+  UIUX_Design
+  Branding
+  
+  // 기타
+  Git
+  Slack
+  Jira
+  Notion
+  Discord
+  Postman
+  Swagger
+  Zeplin
+}
+
+// ============================================
+// [1. Auth Service]
+// ============================================
+Table users {
+  user_id uuid [not null, pk, note: 'Cognito sub(Subject ID)']
+  email varchar(100) [unique, not null]
+  nickname varchar(20) [not null]
+  role ENUM('USER', 'ADMIN') [default: 'USER']
+  profile_image_url text
+  liked_project_ids json [note: 'Array: [1, 20, 55]']
+  test_count int [default: 5]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table user_stacks {
+  stack_id bigint [pk, increment]
+  user_id uuid [not null]
+  position_type StackCategory [not null]
+  stack_name varchar(50) [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+// ============================================
+// [2. Project Service]
+// ============================================
+Table projects {
+  project_id bigint [pk, increment]
+  user_id uuid [not null, note: '팀장 ID']
+  type ENUM('PROJECT', 'STUDY') [not null]
+  title varchar(100) [not null]
+  description text [not null]
+  method ENUM('ONLINE', 'OFFLINE', 'MIXED') [default: 'ONLINE']
+  status ENUM('RECRUITING', 'PROCEEDING', 'COMPLETED', 'CLOSED') [default: 'RECRUITING']
+  start_date date [not null]
+  end_date date [not null]
+  test_required boolean [default: false]
+  views int [default: 0]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table project_recruitment_positions {
+  project_id bigint [pk, not null]
+  position_type StackCategory [pk, not null]
+  required_stacks text
+  target_count integer
+  current_count integer [default: 0]
+  recruitment_deadline date
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table applications {
+  application_id bigint [pk, increment]
+  project_id bigint [not null]
+  user_id uuid [not null]
+  position_type StackCategory [not null]
+  message text [not null]
+  status ENUM('PENDING', 'ACCEPTED', 'REJECTED') [default: 'PENDING']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+// ============================================
+// [3. Team Service]
+// ============================================
+Table teams {
+  team_id bigint [pk, increment]
+  project_id bigint [unique, not null]
+  name varchar(50) [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table team_members {
+  team_id bigint [not null]
+  user_id uuid [not null]
+  role ENUM('LEADER', 'MEMBER') [default: 'MEMBER']
+  position_type StackCategory [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+  Indexes { (team_id, user_id) [pk] }
+}
+
+Table tasks {
+  task_id bigint [pk, increment]
+  project_id bigint [not null]
+  title varchar(255) [not null]
+  description text
+  status ENUM('TODO', 'IN_PROGRESS', 'DONE') [default: 'TODO']
+  priority ENUM('HIGH', 'MEDIUM', 'LOW') [default: 'MEDIUM']
+  created_by uuid [not null]
+  assignee_id uuid
+  start_date timestamp
+  due_date timestamp
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table shared_files {
+  file_id bigint [pk, increment]
+  project_id bigint [not null]
+  team_id bigint
+  file_name varchar(255) [not null]
+  file_size bigint [not null]
+  file_type varchar(50) [not null]
+  file_url varchar(1024) [not null]
+  s3_key varchar(1024) [not null]
+  uploaded_by uuid [not null]
+  description text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table invitations {
+  invitation_id uuid [pk]
+  project_id bigint [not null]
+  invitation_code varchar(20) [unique, not null]
+  invitation_link varchar(1024) [not null]
+  invited_by uuid [not null]
+  position_type StackCategory [not null]
+  message text
+  expires_at timestamp [not null]
+  is_used boolean [default: false]
+  used_by uuid
+  used_at timestamp
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table meeting_sessions {
+  session_id bigint [pk, increment]
+  team_id bigint [not null]
+  project_id bigint
+  started_at timestamp [not null]
+  ended_at timestamp
+  status ENUM('IN_PROGRESS', 'COMPLETED') [default: 'IN_PROGRESS']
+  generated_report_id bigint
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Enum ReportType {
+  MEETING_MINUTES
+  PROJECT_PLAN
+  WEEKLY_REPORT
+  PORTFOLIO
+}
+
+Table generated_reports {
+  report_id bigint [pk, increment]
+  team_id bigint [not null]
+  project_id bigint
+  created_by uuid [not null]
+  report_type ReportType [not null]
+  status ENUM('PENDING', 'COMPLETED', 'FAILED') [default: 'PENDING']
+  model_id varchar(100)
+  title varchar(200)
+  content text
+  s3_key varchar(1024)
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+// ============================================
+// [4. AI Service]
+// ============================================
+Table tests {
+  test_id bigint [pk, increment]
+  stack_name varchar(50) [not null]
+  question_json json [not null]
+  difficulty varchar(20) [default: '초급']
+  source_prompt text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table test_results {
+  result_id bigint [pk, increment]
+  user_id uuid [not null]
+  project_id bigint
+  application_id bigint [unique]
+  test_type varchar(20) [default: 'APPLICATION']
+  score int
+  feedback text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table portfolios {
+  portfolio_id bigint [pk, increment]
+  user_id uuid [not null]
+  project_id bigint [not null]
+  title varchar(200) [default: '프로젝트 회고록']
+  summary text
+  role_description text
+  problem_solving text
+  tech_stack_usage text
+  growth_point text
+  thumbnail_url varchar(1024)
+  is_public boolean [default: true]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+// ============================================
+// [5. Support & Communication Service]
+// ============================================
+Table project_reports {
+  report_id bigint [pk, increment]
+  user_id uuid [not null]
+  project_id bigint [not null]
+  type ENUM('REPORT', 'INQUIRY', 'BUG') [not null]
+  content text [not null]
+  status ENUM('PENDING', 'IN_PROGRESS', 'RESOLVED', 'DISMISSED') [default: 'PENDING']
+  resolution_note text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table notifications {
+  notification_id bigint [pk, increment]
+  user_id uuid [not null]
+  message text
+  link text
+  is_read boolean [default: false]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table notices {
+  notice_id bigint [pk, increment]
+  title varchar(100) [not null]
+  content text [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table banners {
+  banner_id bigint [pk, increment]
+  title varchar(100)
+  link text
+  is_active boolean [default: true]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table events {
+  event_id bigint [pk, increment]
+  title varchar(100)
+  category ENUM('CONTEST', 'HACKATHON')
+  description text
+  image_url text
+  start_date timestamp
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+// ============================================
+// [DynamoDB Entities]
+// ============================================
+Table team_chats_ddb {
+  project_id bigint [pk, note: 'PK: ROOM#{project_id}']
+  timestamp varchar [note: 'SK: MSG#{timestamp}']
+  message_id varchar(50)
+  user_id uuid
+  message text
+  created_at timestamp
+}
+
+Table chat_rooms_ddb {
+  user_id uuid [pk, note: 'PK: USER#{user_id}']
+  room_id bigint
+  updated_at timestamp
+}
+
+// ============================================
+// [TableGroups]
+// ============================================
+TableGroup Auth_Service {
+  users
+  user_stacks
+}
+
+TableGroup Project_Service {
+  projects
+  project_recruitment_positions
+  applications
+}
+
+TableGroup Team_Service {
+  teams
+  team_members
+  tasks
+  shared_files
+  invitations
+  meeting_sessions
+  generated_reports
+}
+
+TableGroup AI_Service {
+  tests
+  test_results
+  portfolios
+}
+
+TableGroup Support_Communication_Service {
+  project_reports
+  notifications
+  notices
+  banners
+  events
+  team_chats_ddb
+  chat_rooms_ddb
+}
+
+// ============================================
+// [Relations]
+// ============================================
+// Auth
+Ref: user_stacks.user_id > users.user_id
+
+// Project
+Ref: projects.user_id > users.user_id
+Ref: project_recruitment_positions.project_id > projects.project_id
+Ref: applications.project_id > projects.project_id
+Ref: applications.user_id > users.user_id
+
+// Team
+Ref: teams.project_id - projects.project_id
+Ref: team_members.team_id > teams.team_id
+Ref: team_members.user_id > users.user_id
+Ref: tasks.project_id > projects.project_id
+Ref: tasks.created_by > users.user_id
+Ref: tasks.assignee_id > users.user_id
+Ref: shared_files.project_id > projects.project_id
+Ref: shared_files.team_id > teams.team_id
+Ref: shared_files.uploaded_by > users.user_id
+Ref: invitations.project_id > projects.project_id
+Ref: invitations.invited_by > users.user_id
+Ref: meeting_sessions.team_id > teams.team_id
+Ref: meeting_sessions.project_id > projects.project_id
+Ref: meeting_sessions.generated_report_id - generated_reports.report_id
+Ref: generated_reports.team_id > teams.team_id
+Ref: generated_reports.project_id > projects.project_id
+Ref: generated_reports.created_by > users.user_id
+
+// AI
+Ref: test_results.user_id > users.user_id
+Ref: test_results.project_id > projects.project_id
+Ref: test_results.application_id - applications.application_id
+Ref: portfolios.user_id > users.user_id
+Ref: portfolios.project_id > projects.project_id
+
+// Support
+Ref: project_reports.user_id > users.user_id
+Ref: project_reports.project_id > projects.project_id
+Ref: notifications.user_id > users.user_id

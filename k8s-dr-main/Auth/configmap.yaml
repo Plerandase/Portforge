@@ -1,0 +1,39 @@
+# =============================================================================
+# Auth Service - ConfigMap
+# ?˜ê²½ ë³€???¤ì •???„í•œ ConfigMap
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  labels:
+    app.kubernetes.io/name: auth-service
+    app.kubernetes.io/component: config
+data:
+  # ? í”Œë¦¬ì??´ì…˜ ?¤ì •
+  ENV: "production"
+  DEBUG: "false"
+  PROJECT_NAME: "Portforge-Auth"
+  
+  # JWT ?¤ì •
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  
+  # Cognito ?¤ì • (Tokyo DR)
+  COGNITO_REGION: "ap-northeast-1"
+  COGNITO_USER_POOL_ID: "ap-northeast-1_8ES8kThhk"
+  COGNITO_APP_CLIENT_ID: "1l8ahl47oeqcuv3frcq1ob20lf"
+  COGNITO_DOMAIN: "ap-northeast-18es8kthhk"
+  REDIRECT_URI: "https://portforge.org/auth/callback"
+  
+  # AWS ?¤ì • (Tokyo DR)
+  AWS_REGION: "ap-northeast-1"
+  
+  # CORS
+  CORS_ORIGINS: "https://portforge.org,https://*.amazoncognito.com,https://*.amazonaws.com"
+  
+  # MSA ?œë¹„??URL
+  PROJECT_SERVICE_URL: "http://project-service:8001"
+  TEAM_SERVICE_URL: "http://team-service:8002"
+  SUPPORT_SERVICE_URL: "http://support-service:8004"

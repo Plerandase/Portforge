@@ -1,0 +1,60 @@
+[project]
+name = "portforge-team-service"
+version = "1.0.0"
+description = "Portforge Team Service - 팀 및 협업 관리"
+authors = [
+    {name = "Portforge Team", email = "support@portforge.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.20.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "aiomysql>=0.2.0",
+    "pymysql>=1.1.0",
+    "cryptography>=41.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "httpx>=0.25.0",
+    "alembic>=1.12.0",
+    "sqlalchemy>=2.0.0",
+    "aioboto3>=12.0.0",
+    "boto3>=1.28.0",
+    "python-multipart (>=0.0.21,<0.0.22)",
+    "prometheus-fastapi-instrumentator (>=7.1.0,<8.0.0)",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.1.0",
+    "poethepoet>=0.24.0",
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poe.tasks]
+# --- 환경 설정 ---
+setup = "poetry install --no-root"
+copy-env = { shell = "python -c \"import shutil, os; os.path.exists('.env') or shutil.copy('.env.example', '.env')\"" }
+
+# --- 실행 ---
+run = "uvicorn app.main:app --port 8002 --reload"
+lint = [
+    { cmd = "ruff check --fix ." },
+    { cmd = "ruff format ." }
+]
+
+# --- DB 관련 ---
+db-up = "docker compose up -d"
+db-down = "docker compose down"
+db-clean = "docker compose down -v"
+migrate = "alembic upgrade head"
+makemigrations = "alembic revision --autogenerate"

@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # =================================================================
+  # MySQL - 물리적으로 1개, 논리적으로 서비스별 스키마 분리
+  # =================================================================
+  mysql:
+    image: mysql:8.0
+    container_name: portforge-mysql
+    ports:
+      - "3306:3306"  # 포트 매핑 추가
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      # 초기 데이터베이스들을 한번에 생성
+      MYSQL_DATABASE: portforge_auth  # 기본 DB (첫 번째만 자동 생성됨)
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql  # 초기화 스크립트
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --bind-address=0.0.0.0
+    networks:
+      - portforge-network
+
+  # =================================================================
+  # DynamoDB Local - 채팅 및 NoSQL 데이터
+  # Port: 8089 (내부 8000) - MSA 서비스와 충돌 방지
+  # =================================================================
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: portforge-dynamodb
+    user: root
+    working_dir: /home/dynamodblocal
+    ports:
+      - "8089:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    volumes:
+      - ddb_data:/home/dynamodblocal/data
+    networks:
+      - portforge-network
+
+  # DynamoDB Admin UI - Port: 8088
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    container_name: portforge-dynamodb-admin
+    ports:
+      - "8088:8001"  # 8088로 변경 (기존 8002는 Team Service와 충돌)
+    environment:
+      DYNAMO_ENDPOINT: "http://dynamodb:8000"
+      AWS_REGION: "ap-northeast-2"
+      AWS_ACCESS_KEY_ID: "local"
+      AWS_SECRET_ACCESS_KEY: "local"
+    depends_on:
+      - dynamodb
+    networks:
+      - portforge-network
+
+volumes:
+  mysql_data:
+  ddb_data:
+
+networks:
+  portforge-network:
+    driver: bridge

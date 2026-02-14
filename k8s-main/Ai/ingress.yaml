@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: portforge-api
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:023490709500:certificate/17eb3ad9-56c5-40f7-a5e2-44bf5b139376
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=300
+    # AI 문제 생성은 시간이 오래 걸리므로 타임아웃 5분으로 설정
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - path: /ai
+        pathType: Prefix
+        backend:
+          service:
+            name: ai-service
+            port:
+              number: 8003

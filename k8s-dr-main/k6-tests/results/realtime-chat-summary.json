@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-01-25T15:19:05.801Z",
+  "testName": "실시간 채팅 부하 테스트 (도배 시나리오 포함)",
+  "baseUrl": "https://api.portforge.org",
+  "metrics": {
+    "totalRequests": 1180,
+    "avgResponseTime": "119.43",
+    "p95ResponseTime": "179.31",
+    "errorRate": "0.68%",
+    "messagesSent": 689
+  },
+  "apiMetrics": {
+    "messageLoad": {
+      "avg": "126.78",
+      "p95": "218.27"
+    },
+    "messageSend": {
+      "avg": "114.19",
+      "p95": "167.26"
+    }
+  }
+}

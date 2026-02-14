@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infra-bot
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: infra-bot
+  template:
+    metadata:
+      labels:
+        app: infra-bot
+    spec:
+      serviceAccountName: infra-bot-sa
+      containers:
+      - name: infra-bot
+        # 이미지는 실제로 빌드해서 올린 ECR 주소로 수정 필요
+        image: 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/infra-bot:latest
+        ports:
+        - containerPort: 8005
+        env:
+        # Secret에서 가져오기
+        - name: SLACK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: infrabot-secret
+              key: SLACK_TOKEN
+        
+        # ConfigMap에서 가져오기
+        - name: SLACK_CHANNEL
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: SLACK_CHANNEL
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: AWS_REGION
+        - name: AWS_RESOURCE_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: AWS_RESOURCE_REGION
+        - name: K8S_NAMESPACE
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: K8S_NAMESPACE
+        - name: PROMETHEUS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: PROMETHEUS_URL
+        - name: RDS_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: RDS_ENDPOINT
+        - name: RDS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: RDS_PORT
+        - name: S3_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: S3_BUCKET
+        - name: DYNAMODB_TABLE
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: DYNAMODB_TABLE
+        - name: DAILY_REPORT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: DAILY_REPORT_ENABLED
+        - name: DAILY_REPORT_TZ
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: DAILY_REPORT_TZ
+        - name: DAILY_REPORT_HOURS
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: DAILY_REPORT_HOURS
+        - name: DAILY_REPORT_WINDOW_MINUTES
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: DAILY_REPORT_WINDOW_MINUTES
+        - name: DAILY_REPORT_LEASE
+          valueFrom:
+            configMapKeyRef:
+              name: infrabot-config
+              key: DAILY_REPORT_LEASE
+              
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8005
+          initialDelaySeconds: 10
+          periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: infra-bot-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: infra-bot
+  ports:
+    - port: 80
+      targetPort: 8005

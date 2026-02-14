@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-01-27T06:40:20.251Z",
+  "testName": "프로젝트 상세 + MSA 통신 테스트 (RPS 기반)",
+  "testConfig": {
+    "targetRPS": 50,
+    "duration": "200s",
+    "targetIterations": 10000
+  },
+  "baseUrl": "https://api.portforge.org",
+  "metrics": {
+    "totalRequests": 20002,
+    "achievedRPS": "100.01",
+    "avgResponseTime": "62.89",
+    "p95ResponseTime": "133.65",
+    "errorRate": "0.39%"
+  },
+  "apiMetrics": {
+    "projectDetail": {
+      "avg": "65.50",
+      "p95": "152.63"
+    },
+    "teamStats": {
+      "avg": "60.28",
+      "p95": "102.88"
+    }
+  }
+}

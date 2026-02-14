@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+  labels:
+    app: auth-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-container
+        image: 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/auth-service:c747e1382c3b0bd23707f13ab432008b8ab2ca6d
+        ports:
+        - containerPort: 8000
+        imagePullPolicy: Always
+        env:
+        # Secret에서 가져오기
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: auth-service-secrets
+              key: database-url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-service-secrets
+              key: secret-key
+        # ConfigMap에서 가져오기
+        - name: ALGORITHM
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: ALGORITHM
+        - name: COGNITO_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: COGNITO_REGION
+        - name: COGNITO_USER_POOL_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: COGNITO_USER_POOL_ID
+        - name: COGNITO_APP_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: COGNITO_APP_CLIENT_ID
+        - name: COGNITO_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: COGNITO_DOMAIN
+        - name: REDIRECT_URI
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: REDIRECT_URI
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: AWS_REGION
+        - name: CORS_ORIGINS
+          valueFrom:
+            configMapKeyRef:
+              name: auth-service-config
+              key: CORS_ORIGINS
+        # AWS 자격 증명 (Secret에서 가져오기)
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: auth-service-secrets
+              key: aws-access-key
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-service-secrets
+              key: aws-secret-key
+        # Cognito User Pool ID (Secret에서 가져오기)
+        - name: COGNITO_USERPOOL_ID
+          valueFrom:
+            secretKeyRef:
+              name: auth-service-secrets
+              key: cognito-userpool-id
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5

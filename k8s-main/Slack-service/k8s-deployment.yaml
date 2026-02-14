@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slack-monitoring-bot
+  namespace: default  # 실제 네임스페이스로 변경
+spec:
+  replicas: 1  # Socket Mode는 단일 인스턴스
+  selector:
+    matchLabels:
+      app: slack-monitoring-bot
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: slack-monitoring-bot
+    spec:
+      containers:
+      - name: slack-monitoring-bot
+        image: 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/slack-monitoring-bot:latest
+        
+        # 환경변수 주입
+        env:
+        # ConfigMap에서 MSA 서비스 URL 가져오기
+        - name: PROJECT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: slack-bot-config
+              key: PROJECT_SERVICE_URL
+        - name: TEAM_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: slack-bot-config
+              key: TEAM_SERVICE_URL
+        - name: AI_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: slack-bot-config
+              key: AI_SERVICE_URL
+        - name: AUTH_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: slack-bot-config
+              key: AUTH_SERVICE_URL
+        - name: SUPPORT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: slack-bot-config
+              key: SUPPORT_SERVICE_URL
+        
+        # 알림 설정
+        - name: ALERT_CHANNEL
+          value: "#서비스-알림"  # 알림을 받을 채널
+        - name: CPU_THRESHOLD
+          value: "80"
+        - name: MEMORY_THRESHOLD
+          value: "80"
+        - name: ERROR_RATE_THRESHOLD
+          value: "20"  # 20%로 변경
+        
+        # Secret에서 Slack 토큰 가져오기
+        - name: SLACK_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slack-bot-secret
+              key: SLACK_BOT_TOKEN
+        - name: SLACK_APP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slack-bot-secret
+              key: SLACK_APP_TOKEN
+        
+        # AWS Bedrock 설정 (AI 에러 분석용)
+        - name: BEDROCK_REGION
+          value: "us-east-1"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: slack-bot-secret
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: slack-bot-secret
+              key: AWS_SECRET_ACCESS_KEY
+        
+        # Kubernetes 설정 (로그 수집용)
+        - name: K8S_NAMESPACE
+          value: "default"
+        
+        # 리소스 제한
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        
+        imagePullPolicy: Always
+      
+      serviceAccountName: slack-bot-sa  # RBAC 권한 적용
+      restartPolicy: Always

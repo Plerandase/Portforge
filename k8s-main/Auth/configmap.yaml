@@ -1,0 +1,39 @@
+# =============================================================================
+# Auth Service - ConfigMap
+# 환경 변수 설정을 위한 ConfigMap
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  labels:
+    app.kubernetes.io/name: auth-service
+    app.kubernetes.io/component: config
+data:
+  # 애플리케이션 설정
+  ENV: "production"
+  DEBUG: "false"
+  PROJECT_NAME: "Portforge-Auth"
+  
+  # JWT 설정
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  
+  # Cognito 설정
+  COGNITO_REGION: "ap-northeast-2"
+  COGNITO_USER_POOL_ID: "ap-northeast-2_4DwI5MdtT"
+  COGNITO_APP_CLIENT_ID: "1lll548h0fo0blhnerb3n1s31d"
+  COGNITO_DOMAIN: "ap-northeast-24dwi5mdtt"
+  REDIRECT_URI: "https://portforge.org/auth/callback"
+  
+  # AWS 설정
+  AWS_REGION: "ap-northeast-2"
+  
+  # CORS
+  CORS_ORIGINS: "https://portforge.org,https://*.amazoncognito.com,https://*.amazonaws.com"
+  
+  # MSA 서비스 URL
+  PROJECT_SERVICE_URL: "http://project-service:8001"
+  TEAM_SERVICE_URL: "http://team-service:8002"
+  SUPPORT_SERVICE_URL: "http://support-api-service:8004"

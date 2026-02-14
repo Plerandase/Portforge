@@ -1,0 +1,37 @@
+# =============================================================================
+# Project Service - ConfigMap
+# 환경 변수 설정을 위한 ConfigMap (default 네임스페이스 사용)
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-service-config
+  labels:
+    app.kubernetes.io/name: project-service
+    app.kubernetes.io/component: config
+data:
+  # 애플리케이션 실행 환경 (development, staging, production)
+  ENV: "production"
+  
+  # 디버그 모드 설정 (프로덕션에서는 false)
+  DEBUG: "false"
+  
+  # 프로젝트 이름 (FastAPI 애플리케이션에서 사용)
+  PROJECT_NAME: "Portforge-Project"
+  
+  # AWS 리전 설정 (ECR, RDS 등 AWS 서비스 접근용)
+  AWS_REGION: "ap-northeast-2"
+  
+  # Cognito 설정 (JWT 토큰 검증용)
+  COGNITO_REGION: "ap-northeast-2"
+  COGNITO_USERPOOL_ID: "ap-northeast-2_4DwI5MdtT"
+  COGNITO_APP_CLIENT_ID: "1lll548h0fo0blhnerb3n1s31d"
+  
+  # MSA 서비스 URL (내부 통신용)
+  TEAM_SERVICE_URL: "http://team-service:8002"
+  AUTH_SERVICE_URL: "http://auth-service:8000"
+  SUPPORT_SERVICE_URL: "http://support-api-service:8004"
+  
+  # CORS 설정
+  CORS_ORIGINS: "https://portforge.org,https://api.portforge.org"

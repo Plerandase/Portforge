@@ -1,0 +1,37 @@
+# =============================================================================
+# Project Service - ConfigMap
+# ?˜ê²½ ë³€???¤ì •???„í•œ ConfigMap (default ?¤ì„?¤í˜?´ìŠ¤ ?¬ìš©)
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-service-config
+  labels:
+    app.kubernetes.io/name: project-service
+    app.kubernetes.io/component: config
+data:
+  # ? í”Œë¦¬ì??´ì…˜ ?¤í–‰ ?˜ê²½ (development, staging, production)
+  ENV: "production"
+  
+  # ?”ë²„ê·?ëª¨ë“œ ?¤ì • (?„ë¡œ?•ì…˜?ì„œ??false)
+  DEBUG: "false"
+  
+  # ?„ë¡œ?íŠ¸ ?´ë¦„ (FastAPI ? í”Œë¦¬ì??´ì…˜?ì„œ ?¬ìš©)
+  PROJECT_NAME: "Portforge-Project"
+  
+  # AWS ë¦¬ì „ ?¤ì • (Tokyo DR)
+  AWS_REGION: "ap-northeast-1"
+  
+  # Cognito ?¤ì • (JWT ? í° ê²€ì¦ìš© - Tokyo DR)
+  COGNITO_REGION: "ap-northeast-1"
+  COGNITO_USERPOOL_ID: "ap-northeast-1_8ES8kThhk"
+  COGNITO_APP_CLIENT_ID: "1l8ahl47oeqcuv3frcq1ob20lf"
+  
+  # MSA ?œë¹„??URL (?´ë? ?µì‹ ??
+  TEAM_SERVICE_URL: "http://team-service:8002"
+  AUTH_SERVICE_URL: "http://auth-service:8000"
+  SUPPORT_SERVICE_URL: "http://support-service:8004"
+  
+  # CORS ?¤ì •
+  CORS_ORIGINS: "https://portforge.org,https://api.portforge.org"

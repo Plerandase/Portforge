@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-01-27T07:46:46.073Z",
+  "testName": "메인 페이지 부하 테스트 (RPS 기반)",
+  "testConfig": {
+    "targetRPS": 50,
+    "duration": "200s",
+    "targetIterations": 10000
+  },
+  "baseUrl": "https://api.portforge.org",
+  "metrics": {
+    "totalRequests": 30000,
+    "achievedRPS": "150.00",
+    "failedRequests": 6234,
+    "avgResponseTime": "124.83",
+    "p95ResponseTime": "594.89",
+    "p99ResponseTime": 0,
+    "errorRate": "29.80%"
+  },
+  "apiMetrics": {
+    "projects": {
+      "avg": "290.15",
+      "p95": "731.73"
+    },
+    "notices": {
+      "avg": "42.57",
+      "p95": "176.92"
+    },
+    "banners": {
+      "avg": "41.76",
+      "p95": "173.20"
+    }
+  }
+}

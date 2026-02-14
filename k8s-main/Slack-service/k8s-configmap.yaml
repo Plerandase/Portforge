@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slack-bot-config
+  namespace: default  # 실제 네임스페이스로 변경
+data:
+  # MSA 서비스 URL (Kubernetes Service Discovery)
+  PROJECT_SERVICE_URL: "http://project-service:8001"
+  TEAM_SERVICE_URL: "http://team-service:8002"
+  AI_SERVICE_URL: "http://ai-service:8003"
+  AUTH_SERVICE_URL: "http://auth-service:8000"
+  SUPPORT_SERVICE_URL: "http://support-service:8004"

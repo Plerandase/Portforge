@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-01-25T15:08:54.357Z",
+  "testName": "프로젝트 상세 + MSA 통신 테스트",
+  "baseUrl": "https://api.portforge.org",
+  "metrics": {
+    "totalRequests": 154,
+    "avgResponseTime": "88.40",
+    "p95ResponseTime": "195.42",
+    "errorRate": "0.00%"
+  },
+  "apiMetrics": {
+    "projectDetail": {
+      "avg": "112.51",
+      "p95": "312.33"
+    },
+    "teamStats": {
+      "avg": "64.28",
+      "p95": "93.03"
+    }
+  }
+}

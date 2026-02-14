@@ -1,0 +1,21 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:CreateSecret",
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:UpdateSecret",
+                "secretsmanager:DeleteSecret",
+                "secretsmanager:TagResource",
+                "secretsmanager:UntagResource"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:ap-northeast-2:023490709500:secret:portforge/*"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portforge-app-of-apps
+  namespace: default
+  labels:
+    app.kubernetes.io/name: portforge-app-of-apps
+spec:
+  project: default
+  
+  # ArgoCD Applications들이 있는 경로
+  source:
+    repoURL: https://github.com/Portforge-Dev/k8s.git
+    targetRevision: HEAD
+    path: argocd/applications
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+  
+  revisionHistoryLimit: 10

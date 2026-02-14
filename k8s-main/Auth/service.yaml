@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  type: ClusterIP  # 내부 통신용 (나중에 Ingress/ALB가 연결해줌)
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 8000    # 서비스의 포트 (들어오는 문)
+      targetPort: 8000 # 컨테이너의 포트 (실제 앱이 떠있는 문)

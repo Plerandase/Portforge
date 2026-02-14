@@ -1,0 +1,134 @@
+# =============================================================================
+# Team Service - Deployment
+# FastAPI 애플리케이션의 배포 설정 및 Pod 관리
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: team-service
+  annotations:
+    argocd-notification-test: "2026-01-22-10-45"
+  labels:
+    app: team-service
+    app.kubernetes.io/name: team-service
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  # 레플리카 수 (고가용성을 위해 2개 이상 권장)
+  replicas: 2
+  
+  # Pod 선택자 (어떤 Pod를 관리할지 결정)
+  selector:
+    matchLabels:
+      app: team-service
+  
+  # Pod 템플릿 정의
+  template:
+    metadata:
+      labels:
+        app: team-service
+        app.kubernetes.io/name: team-service
+        app.kubernetes.io/component: backend
+    spec:
+      containers:
+      - name: team-service
+        # ECR에서 가져온 Docker 이미지
+        image: 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/team-service:22e6f0965d3560f6dd8a6c97f79c993e1e64480c
+        
+        # 컨테이너 포트 (FastAPI 서버가 8002번 포트에서 실행)
+        ports:
+        - containerPort: 8002
+          name: http
+          protocol: TCP
+        
+        # ConfigMap에서 환경 변수 가져오기
+        envFrom:
+        - configMapRef:
+            name: team-service-config
+        
+        # Secret에서 민감한 환경 변수 가져오기
+        env:
+        # 통합 데이터베이스 URL (FastAPI에서 주로 사용)
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: database-url
+        
+        # 개별 DB 연결 정보 (필요시 사용)
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: db-host
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: db-port
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: db-name
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: db-username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: db-password
+        
+        # JWT 시크릿
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: jwt-secret
+        
+        # AWS 자격 증명
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: aws-access-key
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: team-service-secrets
+              key: aws-secret-key
+        
+        # 리소스 제한 설정 (CPU, 메모리)
+        resources:
+          requests:
+            # 최소 요구 리소스
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            # 최대 사용 가능 리소스
+            memory: "1Gi"
+            cpu: "1000m"
+        
+        # 생존 상태 확인 (Pod가 정상 작동하는지 체크)
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 30  # 시작 후 30초 대기
+          periodSeconds: 10        # 10초마다 체크
+          timeoutSeconds: 5        # 5초 내 응답 필요
+          failureThreshold: 3      # 3번 실패시 재시작
+        
+        # 준비 상태 확인 (트래픽을 받을 준비가 되었는지 체크)
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 5   # 시작 후 5초 대기
+          periodSeconds: 5         # 5초마다 체크
+          timeoutSeconds: 3        # 3초 내 응답 필요
+          failureThreshold: 3      # 3번 실패시 트래픽 차단

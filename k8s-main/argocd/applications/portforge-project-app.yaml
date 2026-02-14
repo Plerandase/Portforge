@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portforge-project-service
+  namespace: default
+  labels:
+    app.kubernetes.io/name: portforge-project-service
+  annotations:
+    # ArgoCD Notifications - 핵심 알림만 (중복 제거)
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-sync-running.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: "cicd"
+spec:
+  project: default
+  
+  # Git 저장소 설정
+  source:
+    repoURL: https://github.com/Portforge-Dev/k8s.git
+    targetRevision: HEAD
+    path: Project
+  
+  # 배포 대상 클러스터
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  
+  # 동기화 정책
+  syncPolicy:
+    automated:
+      prune: true      # 더 이상 Git에 없는 리소스 삭제
+      selfHeal: true   # 수동 변경사항 자동 복구
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+  
+  # 상태 확인 설정
+  revisionHistoryLimit: 10

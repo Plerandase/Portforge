@@ -1,0 +1,196 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: default
+data:
+  # ArgoCD URL 설정
+  context: |
+    argocdUrl: https://argocd.portforge.org
+  
+  # 기본 구독 설정 제거 - Application별로 annotations에서 설정
+  
+  # Slack 서비스 설정 (Bot Token 방식)
+  service.slack: |
+    token: $slack-token
+  
+  # Pod 재생성 감지 트리거 (제거됨 - sync-succeeded와 중복)
+  
+  # Pod 상태 변경 감지 제거됨 (sync-succeeded와 거의 동시 발생으로 중복)
+  
+  trigger.on-health-degraded: |
+    - description: Application has degraded
+      send:
+      - app-health-degraded
+      when: app.status.health.status == 'Degraded'
+  
+  trigger.on-sync-failed: |
+    - description: Application syncing has failed
+      send:
+      - app-sync-failed
+      when: app.status.operationState.phase in ['Error', 'Failed']
+  
+  trigger.on-sync-running: |
+    - description: Application is being synced
+      send:
+      - app-sync-running
+      when: app.status.operationState != nil and app.status.operationState.phase in ['Running']
+  
+  trigger.on-sync-progressing: |
+    - description: Application sync succeeded but health is still progressing
+      send:
+      - app-sync-progressing
+      when: app.status.operationState != nil and app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Progressing'
+  
+  trigger.on-sync-succeeded: |
+    - description: Application sync completed successfully and is healthy
+      send:
+      - app-sync-succeeded
+      when: app.status.operationState != nil and app.status.operationState.phase in ['Succeeded'] and app.status.operationState.operation.sync != nil and app.status.health.status == 'Healthy'
+  
+  # app-deployed 템플릿 제거됨 (sync-succeeded와 중복)
+  # app-pods-ready 템플릿 제거됨 (sync-succeeded와 중복)
+  
+  template.app-health-degraded: |
+    message: |
+      ⚠️ *{{.app.metadata.name}}* 상태 이상 감지
+      
+      • Health: {{.app.status.health.status}}
+    slack:
+      attachments: |
+        [{
+          "color": "warning",
+          "fields": [
+            {
+              "title": "Application",
+              "value": "{{.app.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "Health Status",
+              "value": "{{.app.status.health.status}}",
+              "short": true
+            }
+          ]
+        }]
+  
+  template.app-sync-failed: |
+    message: |
+      ❌ *{{.app.metadata.name}}* 동기화 실패
+      
+      • Sync: {{.app.status.sync.status}}
+    slack:
+      attachments: |
+        [{
+          "color": "danger",
+          "fields": [
+            {
+              "title": "Application",
+              "value": "{{.app.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "Sync Status",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            }
+          ]
+        }]
+  
+  template.app-sync-running: |
+    message: |
+      🔄 *{{.app.metadata.name}}* 동기화 진행 중
+      
+      • 단계: {{.app.status.operationState.phase}}
+      • 진행률: 동기화 중...
+    slack:
+      attachments: |
+        [{
+          "color": "#439FE0",
+          "fields": [
+            {
+              "title": "애플리케이션",
+              "value": "{{.app.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "진행 단계",
+              "value": "{{.app.status.operationState.phase}}",
+              "short": true
+            }
+          ]
+        }]
+  
+  template.app-sync-progressing: |
+    message: |
+      ⏳ *{{.app.metadata.name}}* 배포 진행 중
+      
+      • 동기화: {{.app.status.sync.status}}
+      • 헬스 상태: {{.app.status.health.status}} (Pod 시작 중...)
+      • 이미지 태그: {{.app.status.sync.revision | substr 0 7}}
+      
+      💡 Pod가 정상 시작되면 완료 알림을 보내드릴게요!
+    slack:
+      attachments: |
+        [{
+          "color": "warning",
+          "fields": [
+            {
+              "title": "애플리케이션",
+              "value": "{{.app.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "동기화 상태",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "헬스 상태",
+              "value": "{{.app.status.health.status}}",
+              "short": true
+            },
+            {
+              "title": "이미지 태그",
+              "value": "{{.app.status.sync.revision | substr 0 7}}",
+              "short": true
+            }
+          ]
+        }]
+  
+  template.app-sync-succeeded: |
+    message: |
+      🎉 *{{.app.metadata.name}}* 배포 완료!
+      
+      • 동기화: {{.app.status.sync.status}}
+      • 헬스 상태: {{.app.status.health.status}} ✅
+      • 이미지 태그: {{.app.status.sync.revision | substr 0 7}}
+      
+      🚀 모든 Pod가 정상 실행 중입니다!
+    slack:
+      attachments: |
+        [{
+          "color": "good",
+          "fields": [
+            {
+              "title": "애플리케이션",
+              "value": "{{.app.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "동기화 상태",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "헬스 상태",
+              "value": "{{.app.status.health.status}}",
+              "short": true
+            },
+            {
+              "title": "이미지 태그",
+              "value": "{{.app.status.sync.revision | substr 0 7}}",
+              "short": true
+            }
+          ]
+        }]

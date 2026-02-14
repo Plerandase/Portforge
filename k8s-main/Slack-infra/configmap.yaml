@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infrabot-config
+  namespace: default
+data:
+  # 알림을 받을 슬랙 채널 ID (예: C01234567)
+  SLACK_CHANNEL: "C0A935FLSBH"
+  
+  # Bedrock을 사용할 AWS 리전 (Claude 3.5 Sonnet 지원 리전)
+  AWS_REGION: "us-east-1"
+  AWS_RESOURCE_REGION: "ap-northeast-2"
+
+  # Prometheus URL for I/O metrics
+  PROMETHEUS_URL: "http://prom-stack-kube-prometheus-prometheus.default.svc:9090"
+
+  # Net check targets
+  RDS_ENDPOINT: "portforge-test-rds.c7wuiqykacxq.ap-northeast-2.rds.amazonaws.com"
+  RDS_PORT: "3306"
+  S3_BUCKET: "portforge-log"
+  DYNAMODB_TABLE: "team_chats_ddb"
+
+  # Daily report settings
+  DAILY_REPORT_ENABLED: "true"
+  DAILY_REPORT_TZ: "Asia/Seoul"
+  DAILY_REPORT_HOURS: "9"
+  DAILY_REPORT_WINDOW_MINUTES: "5"
+  DAILY_REPORT_LEASE: "infra-bot-daily-report"
+
+  # Kubernetes namespace for infra-bot queries
+  K8S_NAMESPACE: "default"

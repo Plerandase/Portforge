@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-01-25T15:27:20.523Z",
+  "testName": "AI 테스트 문제 생성 부하 테스트",
+  "baseUrl": "https://api.portforge.org",
+  "warning": "Bedrock API 호출 비용이 발생합니다!",
+  "metrics": {
+    "totalRequests": 43,
+    "avgResponseTime": "13860.12",
+    "p95ResponseTime": "26306.73",
+    "errorRate": "6.98%",
+    "questionsGenerated": 110,
+    "bedrockCalls": 43
+  },
+  "apiMetrics": {
+    "questionGeneration": {
+      "avg": "18845.70",
+      "p95": "27095.90"
+    },
+    "grading": {
+      "avg": "3049.47",
+      "p95": "4403.14"
+    },
+    "analysis": {
+      "avg": "10044.71",
+      "p95": "12405.68"
+    }
+  }
+}

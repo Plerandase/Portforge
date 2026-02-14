@@ -1,0 +1,49 @@
+# =============================================================================
+# Team Service - ConfigMap
+# 민감하지 않은 환경 설정 정보를 관리
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: team-service-config
+  labels:
+    app.kubernetes.io/name: team-service
+    app.kubernetes.io/component: config
+data:
+  # JWT 설정
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  
+  # AWS 리전
+  AWS_REGION: "ap-northeast-2"
+  
+  # S3 버킷 이름
+  S3_BUCKET_TEAM: "portforge-team"
+  S3_BUCKET_LOG: "portforge-log"
+  S3_BUCKET_FRONT: "portforge-front"
+  
+  # DynamoDB 테이블 이름
+  DYNAMODB_TABLE_CHATS: "team_chats"
+  DYNAMODB_TABLE_ROOMS: "chat_rooms"
+  
+  # MSA Service URLs (클러스터 내부 통신 - default 네임스페이스)
+  AUTH_SERVICE_URL: "http://auth-service:8000"
+  PROJECT_SERVICE_URL: "http://project-service:8001"
+  TEAM_SERVICE_URL: "http://team-service:8002"
+  AI_SERVICE_URL: "http://ai-service:8003"
+  SUPPORT_SERVICE_URL: "http://support-api-service:8004"
+  
+  # Cognito 설정 (JWT 토큰 검증용)
+  COGNITO_REGION: "ap-northeast-2"
+  COGNITO_USERPOOL_ID: "ap-northeast-2_4DwI5MdtT"
+  COGNITO_APP_CLIENT_ID: "1lll548h0fo0blhnerb3n1s31d"
+  
+  # CORS 설정
+  CORS_ORIGINS: "https://portforge.org,https://api.portforge.org"
+
+  
+  # 애플리케이션 설정
+  APP_NAME: "Team Service"
+  APP_VERSION: "1.0.0"
+  DEBUG: "false"

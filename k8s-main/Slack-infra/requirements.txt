@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+boto3
+requests
+tenacity
+kubernetes
+python-multipart

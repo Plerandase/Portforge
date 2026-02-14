@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: team-service-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: portforge-api
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:023490709500:certificate/17eb3ad9-56c5-40f7-a5e2-44bf5b139376
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - path: /api/v1/teams  # 팀 서비스 경로
+        pathType: Prefix
+        backend:
+          service:
+            name: team-service
+            port:
+              number: 8002
+      - path: /api/v1/integration  # 팀스페이스 API 경로 추가
+        pathType: Prefix
+        backend:
+          service:
+            name: team-service
+            port:
+              number: 8002

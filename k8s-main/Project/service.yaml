@@ -1,0 +1,33 @@
+# =============================================================================
+# Project Service - Service
+# 클러스터 내부에서 Project Service에 접근하기 위한 네트워크 설정
+# =============================================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-service
+  labels:
+    app: project-service
+    app.kubernetes.io/name: project-service
+    app.kubernetes.io/component: service
+spec:
+  # Pod 선택자 (어떤 Pod로 트래픽을 전달할지 결정)
+  selector:
+    app: project-service
+  
+  # 포트 설정
+  ports:
+  - port: 8001          # 서비스가 노출할 포트
+    targetPort: 8001    # Pod의 실제 포트
+    protocol: TCP
+    name: http
+  
+  # 서비스 타입
+  # ClusterIP: 클러스터 내부에서만 접근 가능 (기본값)
+  # NodePort: 각 노드의 특정 포트로 외부 접근 가능
+  # LoadBalancer: 클라우드 로드밸런서 생성
+  type: ClusterIP
+  
+  # MSA 구조에서 다른 서비스들이 이 주소로 접근:
+  # http://project-service.default.svc.cluster.local:8001

@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-01-27T07:19:24.953Z",
+  "testName": "실시간 채팅 부하 테스트 (RPS 기반)",
+  "testConfig": {
+    "targetRPS": 100,
+    "duration": "100s",
+    "targetIterations": 10000
+  },
+  "baseUrl": "https://api.portforge.org",
+  "metrics": {
+    "totalRequests": 12164,
+    "achievedRPS": "121.64",
+    "avgResponseTime": "1645.41",
+    "p95ResponseTime": "18457.97",
+    "errorRate": "100.00%",
+    "messagesSent": 0
+  },
+  "apiMetrics": {
+    "messageLoad": {
+      "avg": "2897.87",
+      "p95": "22163.79"
+    },
+    "messageSend": {
+      "avg": "392.95",
+      "p95": "4281.70"
+    }
+  }
+}

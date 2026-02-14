@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: auth-service-ingress
+  namespace: default
+  annotations:
+    # 1. 클래스 명시 (어노테이션 방식)
+    kubernetes.io/ingress.class: alb
+    # 2. 인그레스 그룹 설정 (이게 있으면 컨트롤러가 더 잘 인식합니다)
+    alb.ingress.kubernetes.io/group.name: portforge-api
+    # 3. 스킴 및 타겟 타입
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # 4. 헬스체크 (숫자 값은 반드시 따옴표로 감싸세요)
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "15"
+    # 5. 서브넷 (Tokyo DR 퍼블릭 서브넷)
+    alb.ingress.kubernetes.io/subnets: subnet-0e6a90b53897142fc, subnet-0e076e9182ac358ad
+    # 6. ACM 인증서 (Tokyo)
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-1:023490709500:certificate/a3ba126a-a642-41a0-b83a-f26ba202e6ff
+    # 6. 80번과 443번 포트를 모두 열어둡니다.
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    # 7. 80번(HTTP)으로 들어오는 모든 요청을 443번(HTTPS)으로 강제 리다이렉트합니다.
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 8000
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 8000

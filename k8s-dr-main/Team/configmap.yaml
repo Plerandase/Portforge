@@ -1,0 +1,49 @@
+# =============================================================================
+# Team Service - ConfigMap
+# ÎØºÍ∞ê?òÏ? ?äÏ? ?òÍ≤Ω ?§Ï†ï ?ïÎ≥¥Î•?Í¥ÄÎ¶?
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: team-service-config
+  labels:
+    app.kubernetes.io/name: team-service
+    app.kubernetes.io/component: config
+data:
+  # JWT ?§Ï†ï
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  
+  # AWS Î¶¨Ï†Ñ (Tokyo DR)
+  AWS_REGION: "ap-northeast-1"
+  
+  # S3 Î≤ÑÌÇ∑ ?¥Î¶Ñ (Tokyo DR)
+  S3_BUCKET_TEAM: "portforge-team-dr"
+  S3_BUCKET_LOG: "portforge-log-dr"
+  S3_BUCKET_FRONT: "portforge-front-dr"
+  
+  # DynamoDB ?åÏù¥Î∏??¥Î¶Ñ (Tokyo DR)
+  DYNAMODB_TABLE_CHATS: "team_chats_dr"
+  DYNAMODB_TABLE_ROOMS: "chat_rooms_dr"
+  
+  # MSA Service URLs (?¥Îü¨?§ÌÑ∞ ?¥Î? ?µÏã† - default ?§ÏûÑ?§Ìéò?¥Ïä§)
+  AUTH_SERVICE_URL: "http://auth-service:8000"
+  PROJECT_SERVICE_URL: "http://project-service:8001"
+  TEAM_SERVICE_URL: "http://team-service:8002"
+  AI_SERVICE_URL: "http://ai-service:8003"
+  SUPPORT_SERVICE_URL: "http://support-service:8004"
+  
+  # Cognito ?§Ï†ï (JWT ?†ÌÅ∞ Í≤ÄÏ¶ùÏö© - Tokyo DR)
+  COGNITO_REGION: "ap-northeast-1"
+  COGNITO_USERPOOL_ID: "ap-northeast-1_8ES8kThhk"
+  COGNITO_APP_CLIENT_ID: "1l8ahl47oeqcuv3frcq1ob20lf"
+  
+  # CORS ?§Ï†ï
+  CORS_ORIGINS: "https://portforge.org,https://api.portforge.org"
+
+  
+  # ?†ÌîåÎ¶¨Ï??¥ÏÖò ?§Ï†ï
+  APP_NAME: "Team Service"
+  APP_VERSION: "1.0.0"
+  DEBUG: "false"

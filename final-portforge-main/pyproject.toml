@@ -1,0 +1,93 @@
+[project]
+name = "portforge-msa"
+version = "1.0.0"
+description = "Portforge MSA - 프로젝트 협업 플랫폼 통합 관리"
+authors = [
+    {name = "Portforge Team", email = "support@portforge.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.20.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "prometheus-fastapi-instrumentator>=6.0.0",
+    "aioboto3>=12.0.0",
+    "aiomysql>=0.2.0",
+    "pymysql>=1.1.0",
+    "cryptography>=41.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "httpx>=0.25.0",
+    "google-generativeai>=0.3.0",
+    "alembic>=1.12.0",
+    "sqlalchemy>=2.0.0",
+    "boto3>=1.28.0",
+    "python-multipart>=0.0.6",
+    "passlib[bcrypt]>=1.7.4",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.1.0",
+    "poethepoet>=0.24.0",
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.poetry]
+package-mode = false
+
+# =================================================================
+# Poe Tasks - 통합 명령어
+# =================================================================
+
+[tool.poe.tasks]
+# --- 환경 설정 ---
+setup = "poetry install --no-root"
+
+# --- Docker 인프라 관리 ---
+db-up = "docker compose up -d"
+db-down = "docker compose down"
+db-clean = "docker compose down -v"
+db-restart = ["db-down", "db-up"]
+db-logs = "docker compose logs -f"
+
+# --- 데이터베이스 관리 (통합) ---
+db-status = { shell = "python db_manager.py status" }
+db-reset = { shell = "python db_manager.py reset" }
+db-create = { shell = "python db_manager.py create" }
+db-seed = { shell = "python db_manager.py seed" }
+db-init = { shell = "python db_manager.py reset-seed" }
+
+# --- 마이그레이션 (각 서비스별) ---
+migrate-auth = { shell = "cd Auth && alembic upgrade head" }
+migrate-project = { shell = "cd Project_Service && alembic upgrade head" }
+migrate-team = { shell = "cd Team-BE && alembic upgrade head" }
+migrate-ai = { shell = "cd Ai && alembic upgrade head" }
+migrate-support = { shell = "cd Support_Communication_Service && alembic upgrade head" }
+migrate-all = ["migrate-auth", "migrate-project", "migrate-team", "migrate-ai", "migrate-support"]
+
+# --- 서비스 실행 (개별) ---
+run-auth = { shell = "cd Auth && python -m uvicorn app.main:app --port 8000 --reload" }
+run-project = { shell = "cd Project_Service && python -m uvicorn app.main:app --port 8001 --reload" }
+run-team = { shell = "cd Team-BE && python -m uvicorn app.main:app --port 8002 --reload" }
+run-ai = { shell = "cd Ai && python -m uvicorn app.main:app --port 8003 --reload" }
+run-support = { shell = "cd Support_Communication_Service && python -m uvicorn app.main:app --port 8004 --reload" }
+run-fe = { shell = "cd FE && npm run dev" }
+
+# --- Lint 및 포맷팅 ---
+lint = [
+    { cmd = "ruff check --fix ." },
+    { cmd = "ruff format ." }
+]
+
+# --- 헬스 체크 ---
+health-check = { shell = "python test_msa_communication.py" }
+
+# --- 전체 초기화 (처음 실행 시) ---
+init = ["db-up", "db-init"]

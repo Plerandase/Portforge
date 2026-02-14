@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: support-chat
+  labels:
+    app: support-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: support-chat
+  template:
+    metadata:
+      labels:
+        app: support-chat
+    spec:
+      containers:
+      - name: support-chat
+        image: 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/support-service:6e6e11dc867023ac5f396b9d1a4b1a9d1d57eb36
+        ports:
+        - containerPort: 8004
+        envFrom:
+        - configMapRef:
+            name: support-config
+        - secretRef:
+            name: support-secret
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 5
+          periodSeconds: 5

@@ -1,0 +1,83 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: support-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: portforge-api
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:023490709500:certificate/17eb3ad9-56c5-40f7-a5e2-44bf5b139376
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      # ===== WebSocket/Chat → support-chat-service (1 Pod) =====
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: support-chat-service
+            port:
+              number: 8004
+      - path: /chat
+        pathType: Prefix
+        backend:
+          service:
+            name: support-chat-service
+            port:
+              number: 8004
+      
+      # ===== HTTP API → support-api-service (2+ Pods, HPA) =====
+      - path: /support/health
+        pathType: Prefix
+        backend:
+          service:
+            name: support-api-service
+            port:
+              number: 8004
+      - path: /notifications
+        pathType: Prefix
+        backend:
+          service:
+            name: support-api-service
+            port:
+              number: 8004
+      - path: /notices
+        pathType: Prefix
+        backend:
+          service:
+            name: support-api-service
+            port:
+              number: 8004
+      - path: /banners
+        pathType: Prefix
+        backend:
+          service:
+            name: support-api-service
+            port:
+              number: 8004
+      - path: /events
+        pathType: Prefix
+        backend:
+          service:
+            name: support-api-service
+            port:
+              number: 8004
+      - path: /admin
+        pathType: Prefix
+        backend:
+          service:
+            name: support-api-service
+            port:
+              number: 8004
+      - path: /support
+        pathType: Prefix
+        backend:
+          service:
+            name: support-api-service
+            port:
+              number: 8004

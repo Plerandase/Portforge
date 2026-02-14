@@ -1,0 +1,269 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/tracking-id: portforge-app-of-apps:argoproj.io/Application:default/portforge-team-service
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"portforge-app-of-apps:argoproj.io/Application:default/portforge-team-service","notifications.argoproj.io/subscribe.on-deployed.slack":"#cicd-알림","notifications.argoproj.io/subscribe.on-health-degraded.slack":"#cicd-알림","notifications.argoproj.io/subscribe.on-sync-failed.slack":"#cicd-알림","notifications.argoproj.io/subscribe.on-sync-running.slack":"#cicd-알림","notifications.argoproj.io/subscribe.on-sync-succeeded.slack":"#cicd-알림"},"labels":{"app.kubernetes.io/name":"portforge-team-service"},"name":"portforge-team-service","namespace":"default"},"spec":{"destination":{"namespace":"default","server":"https://kubernetes.default.svc"},"project":"default","revisionHistoryLimit":10,"source":{"path":"Team","repoURL":"https://github.com/Portforge-Dev/k8s.git","targetRevision":"HEAD"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"syncOptions":["CreateNamespace=true","PrunePropagationPolicy=foreground","PruneLast=true"]}}}
+    notifications.argoproj.io/subscribe.on-deployed.slack: '#cicd-알림'
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: '#cicd-알림'
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: '#cicd-알림'
+    notifications.argoproj.io/subscribe.on-sync-running.slack: '#cicd-알림'
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: '#cicd-알림'
+    notified.notifications.argoproj.io: '{"0cf95cb52cf99957d8131d1540e4d3442c46c1fc:on-deployed:[0].y7b5sbwa2Q329JYH755peeq-fBs:slack:cicd-alerts":1769041375,"318eed6df9bfe21626aa0db5ccaa989b15a52c13:on-deployed:[0].y7b5sbwa2Q329JYH755peeq-fBs:slack:cicd-alerts":1769042074,"3b47468b9da46662c61826cbbd9bd33265158f7b:on-deployed:[0].y7b5sbwa2Q329JYH755peeq-fBs:slack:cicd-alerts":1769041885,"49b11ff1d543206ccb6a25bee8d8408ee2b4e0b2:on-deployed:[0].y7b5sbwa2Q329JYH755peeq-fBs:slack:cicd-alerts":1769042655,"6bca0392e23638e1729b5e1222a885ea5a2e3e88:on-deployed:[0].y7b5sbwa2Q329JYH755peeq-fBs:slack:cicd-alerts":1769043832,"8d2a9b8df5bc5ee5217aff98202e6689dbfed694:on-deployed:[0].y7b5sbwa2Q329JYH755peeq-fBs:slack:cicd-alerts":1769044285,"b2b373ae959f93ac3f384886fb2210aa5b43d630:on-deployed:[0].y7b5sbwa2Q329JYH755peeq-fBs:slack:cicd-alerts":1769044557}'
+  creationTimestamp: "2026-01-20T05:40:46Z"
+  generation: 1178
+  labels:
+    app.kubernetes.io/name: portforge-team-service
+  name: portforge-team-service
+  namespace: default
+  resourceVersion: "1062246"
+  uid: 897e11ae-10b6-4a0c-8b44-e93af2112bcb
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  revisionHistoryLimit: 10
+  source:
+    path: Team
+    repoURL: https://github.com/Portforge-Dev/k8s.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+status:
+  controllerNamespace: default
+  health:
+    lastTransitionTime: "2026-01-22T01:43:04Z"
+    status: Healthy
+  history:
+  - deployStartedAt: "2026-01-21T05:56:04Z"
+    deployedAt: "2026-01-21T05:56:05Z"
+    id: 22
+    initiatedBy:
+      automated: true
+    revision: 059bae72cdcb3da4ca11aa6569c443f051c59eda
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-21T07:01:38Z"
+    deployedAt: "2026-01-21T07:01:39Z"
+    id: 23
+    initiatedBy:
+      automated: true
+    revision: 5215d6b893b7946d69d712edf3dfffc5e72fd855
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-21T07:03:40Z"
+    deployedAt: "2026-01-21T07:03:41Z"
+    id: 24
+    initiatedBy:
+      username: admin
+    revision: 5215d6b893b7946d69d712edf3dfffc5e72fd855
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-21T07:32:38Z"
+    deployedAt: "2026-01-21T07:32:39Z"
+    id: 25
+    initiatedBy:
+      username: admin
+    revision: aae35a1ed586734ae03f3a0dd10f7607417b4493
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-22T00:34:06Z"
+    deployedAt: "2026-01-22T00:34:07Z"
+    id: 26
+    initiatedBy:
+      automated: true
+    revision: 318eed6df9bfe21626aa0db5ccaa989b15a52c13
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-22T00:43:47Z"
+    deployedAt: "2026-01-22T00:43:48Z"
+    id: 27
+    initiatedBy:
+      automated: true
+    revision: 49b11ff1d543206ccb6a25bee8d8408ee2b4e0b2
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-22T01:15:29Z"
+    deployedAt: "2026-01-22T01:15:30Z"
+    id: 28
+    initiatedBy:
+      automated: true
+    revision: b2b373ae959f93ac3f384886fb2210aa5b43d630
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-22T01:30:55Z"
+    deployedAt: "2026-01-22T01:30:55Z"
+    id: 29
+    initiatedBy:
+      automated: true
+    revision: 444e8835771c1a716cc0cce76f6ee6ac6d13f5e1
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-22T01:42:32Z"
+    deployedAt: "2026-01-22T01:42:33Z"
+    id: 30
+    initiatedBy:
+      automated: true
+    revision: 4c8148d7b101183ed28efc4286542905d284e64a
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-01-22T01:55:30Z"
+    deployedAt: "2026-01-22T01:55:31Z"
+    id: 31
+    initiatedBy:
+      automated: true
+    revision: 95057fe0a7f4c43078635720003188d671d1843c
+    source:
+      path: Team
+      repoURL: https://github.com/Portforge-Dev/k8s.git
+      targetRevision: HEAD
+  operationState:
+    finishedAt: "2026-01-22T01:55:31Z"
+    message: successfully synced (all tasks run)
+    operation:
+      initiatedBy:
+        automated: true
+      retry:
+        limit: 5
+      sync:
+        prune: true
+        revision: 95057fe0a7f4c43078635720003188d671d1843c
+        source:
+          path: Team
+          repoURL: https://github.com/Portforge-Dev/k8s.git
+          targetRevision: HEAD
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+    phase: Succeeded
+    startedAt: "2026-01-22T01:55:30Z"
+    syncResult:
+      resources:
+      - group: ""
+        hookPhase: Running
+        kind: Secret
+        message: secret/team-service-secrets configured
+        name: team-service-secrets
+        namespace: default
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: ConfigMap
+        message: configmap/team-service-config unchanged
+        name: team-service-config
+        namespace: default
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: Service
+        message: service/team-service unchanged
+        name: team-service
+        namespace: default
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: apps
+        hookPhase: Running
+        images:
+        - 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/team-service:58c2c4d86ebdaf3744be00373d3104a5691fd274
+        kind: Deployment
+        message: deployment.apps/team-service configured
+        name: team-service
+        namespace: default
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: networking.k8s.io
+        hookPhase: Running
+        kind: Ingress
+        message: ingress.networking.k8s.io/team-service-ingress unchanged
+        name: team-service-ingress
+        namespace: default
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      revision: 95057fe0a7f4c43078635720003188d671d1843c
+      source:
+        path: Team
+        repoURL: https://github.com/Portforge-Dev/k8s.git
+        targetRevision: HEAD
+  reconciledAt: "2026-01-22T01:59:43Z"
+  resourceHealthSource: appTree
+  resources:
+  - kind: ConfigMap
+    name: team-service-config
+    namespace: default
+    status: Synced
+    version: v1
+  - kind: Secret
+    name: team-service-secrets
+    namespace: default
+    status: Synced
+    version: v1
+  - kind: Service
+    name: team-service
+    namespace: default
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: team-service
+    namespace: default
+    status: Synced
+    version: v1
+  - group: networking.k8s.io
+    kind: Ingress
+    name: team-service-ingress
+    namespace: default
+    status: Synced
+    version: v1
+  sourceHydrator: {}
+  sourceType: Directory
+  summary:
+    externalURLs:
+    - http://k8s-portforgeapi-19c6a81f3a-332323031.ap-northeast-2.elb.amazonaws.com/api/v1/integration
+    - http://k8s-portforgeapi-19c6a81f3a-332323031.ap-northeast-2.elb.amazonaws.com/api/v1/teams
+    images:
+    - 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/team-service:58c2c4d86ebdaf3744be00373d3104a5691fd274
+  sync:
+    comparedTo:
+      destination:
+        namespace: default
+        server: https://kubernetes.default.svc
+      source:
+        path: Team
+        repoURL: https://github.com/Portforge-Dev/k8s.git
+        targetRevision: HEAD
+    revision: 95057fe0a7f4c43078635720003188d671d1843c
+    status: Synced

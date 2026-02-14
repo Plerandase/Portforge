@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-service
+  labels:
+    app: ai-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-service
+  template:
+    metadata:
+      labels:
+        app: ai-service
+    spec:
+      # initContainers 제거 - Tokyo는 Read Replica라서 DB 쓰기 불가
+      containers:
+      - name: ai-service
+        image: 023490709500.dkr.ecr.ap-northeast-2.amazonaws.com/ai-service:34f1011879a3d353a76719d36c04bfad1fe3075e
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8003
+          name: http
+        env:
+        # App Settings
+        - name: PROJECT_NAME
+          value: "Portforge-AI-Service"
+        - name: ENV
+          value: "production"
+        - name: DEBUG
+          value: "false"
+        
+        # Database - MySQL (Secret에서 가져오기)
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: ai-service-secrets
+              key: database-url
+        
+        # AWS Region (Tokyo DR)
+        - name: AWS_REGION
+          value: "ap-northeast-1"
+        # AWS 자격 증명 (Secret에서 가져오기)
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: ai-service-secrets
+              key: aws-access-key
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-service-secrets
+              key: aws-secret-key
+        
+        # S3 Settings (Tokyo DR)
+        - name: S3_BUCKET_TEAM
+          value: "portforge-team-dr"
+        - name: S3_BUCKET_LOG
+          value: "portforge-log-dr"
+        - name: S3_BUCKET_FRONT
+          value: "portforge-front-dr"
+        - name: S3_PREFIX
+          value: "ai/"
+        
+        # DynamoDB Settings
+        - name: DDB_ENDPOINT_URL
+          value: ""
+        - name: DDB_TABLE_NAME
+          value: "team_chats"
+        
+        # Bedrock Settings (Claude는 us-east-1에서 사용 가능)
+        - name: BEDROCK_REGION
+          value: "us-east-1"
+        - name: BEDROCK_MODEL_ID
+          value: "anthropic.claude-3-haiku-20240307-v1:0"
+        
+        # Cognito Settings (Tokyo DR)
+        - name: COGNITO_REGION
+          value: "ap-northeast-1"
+        - name: COGNITO_USERPOOL_ID
+          valueFrom:
+            secretKeyRef:
+              name: ai-service-secrets
+              key: cognito-userpool-id
+        - name: COGNITO_APP_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: ai-service-secrets
+              key: cognito-app-client-id
+        
+        # JWT Settings
+        - name: JWT_ALGORITHM
+          value: "RS256"
+        - name: ACCESS_TOKEN_EXPIRE_MINUTES
+          value: "30"
+        
+        # CORS
+        - name: CORS_ORIGINS
+          value: "https://portforge.org"
+        
+        # MSA Service URLs
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:8000"
+        - name: PROJECT_SERVICE_URL
+          value: "http://project-service:8001"
+        - name: TEAM_SERVICE_URL
+          value: "http://team-service:8002"
+        - name: AI_SERVICE_URL
+          value: "http://ai-service:8003"
+        - name: SUPPORT_SERVICE_URL
+          value: "http://support-service:8004"
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8003
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

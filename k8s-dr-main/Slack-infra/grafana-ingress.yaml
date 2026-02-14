@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: default
+  annotations:
+    # 확인된 그룹 이름을 동일하게 사용합니다.
+    alb.ingress.kubernetes.io/group.name: portforge-api
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # 기존 인프라에서 사용하는 서브넷을 명시합니다.
+    alb.ingress.kubernetes.io/subnets: subnet-0ee858ef105013d3a, subnet-019d9e2f7eeb97261
+    # Grafana의 기본 헬스체크 경로는 /api/health 입니다.
+    alb.ingress.kubernetes.io/healthcheck-path: /api/health
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    # SSL 설정을 위해 사용 중인 ACM 인증서 ARN을 아래에 꼭 넣어주세요.
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:023490709500:certificate/17eb3ad9-56c5-40f7-a5e2-44bf5b139376
+spec:
+  ingressClassName: alb
+  rules:
+    - host: grafana.portforge.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prom-stack-grafana
+                port:
+                  number: 80

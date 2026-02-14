@@ -1,0 +1,38 @@
+from sqlalchemy import Column, String, Integer, Text, JSON, DateTime, Enum as SQLEnum, BigInteger, ForeignKey
+from sqlalchemy.dialects.mysql import CHAR
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+from app.core.database import Base
+from app.models.enums import UserRole, StackCategory, TechStack
+import uuid
+
+class User(Base):
+    __tablename__ = "users"
+    
+    user_id = Column(CHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String(100), unique=True, nullable=False)
+    nickname = Column(String(20), nullable=False)
+    role = Column(SQLEnum(UserRole), default=UserRole.USER)
+    profile_image_url = Column(Text)
+    liked_project_ids = Column(JSON, comment="Array: [1, 20, 55]")
+    test_count = Column(Integer, default=5)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, comment="프로필 수정 일시")
+    
+    # 관계 설정
+    stacks = relationship("UserStack", back_populates="user")
+    projects = relationship("Project", back_populates="user")
+    applications = relationship("Application", back_populates="user")
+
+class UserStack(Base):
+    __tablename__ = "user_stacks"
+    
+    stack_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(CHAR(36), ForeignKey("users.user_id"), nullable=False)
+    position_type = Column(SQLEnum(StackCategory), nullable=False)
+    stack_name = Column(SQLEnum(TechStack), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now())
+    
+    # 관계 설정
+    user = relationship("User", back_populates="stacks")

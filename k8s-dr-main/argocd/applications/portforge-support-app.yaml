@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portforge-support-service
+  namespace: default
+  labels:
+    app.kubernetes.io/name: portforge-support-service
+  annotations:
+    # ArgoCD Notifications - Slack 알림 구독 (Webhook 기본 채널 사용)
+    notifications.argoproj.io/subscribe.on-deployed.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-sync-running.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: "cicd"
+    notifications.argoproj.io/subscribe.on-pod-ready.slack: "cicd"
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/Portforge-Dev/k8s.git
+    targetRevision: HEAD
+    path: Support  # Support 디렉토리 경로
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+  
+  revisionHistoryLimit: 10
